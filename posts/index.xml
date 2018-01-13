@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on ✨ Elegant Programming in Swift</title>
+    <link>https://jegnux.github.io/posts/</link>
+    <description>Recent content in Posts on ✨ Elegant Programming in Swift</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 14 Jan 2018 01:40:45 +0100</lastBuildDate>
+    
+	<atom:link href="https://jegnux.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Equatable on Enum Associated Values</title>
+      <link>https://jegnux.github.io/posts/equatable-on-enum-associated-values/</link>
+      <pubDate>Sun, 14 Jan 2018 01:40:45 +0100</pubDate>
+      
+      <guid>https://jegnux.github.io/posts/equatable-on-enum-associated-values/</guid>
+      <description>The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
+Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
+&amp;mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
+ you should use a switch instead, but still need to compare all cases.
+ Maybe. But the code above still feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.</description>
+    </item>
+    
+    <item>
+      <title>Safe Collection Subscripting</title>
+      <link>https://jegnux.github.io/posts/safe-collection-subscripting/</link>
+      <pubDate>Sun, 14 Jan 2018 00:34:59 +0100</pubDate>
+      
+      <guid>https://jegnux.github.io/posts/safe-collection-subscripting/</guid>
+      <description>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
+On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
+public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
+    </item>
+    
+    <item>
+      <title>Elegant Programming</title>
+      <link>https://jegnux.github.io/posts/elegant-programming/</link>
+      <pubDate>Sat, 13 Jan 2018 23:18:25 +0100</pubDate>
+      
+      <guid>https://jegnux.github.io/posts/elegant-programming/</guid>
+      <description>Elegant code is simple, gives you some new insight and is generally composable and modular. These qualities, although they may look almost arbitrary, are actually deeply related, practically different facets of the same underlying idea.
+ That&amp;rsquo;s what you can read in this answer on Quora.
+In this blog, I&amp;rsquo;ll try to see how we, as iOS developers, can exhibit theses qualities in the code we write on a daily basis in Swift.</description>
+    </item>
+    
+  </channel>
+</rss>

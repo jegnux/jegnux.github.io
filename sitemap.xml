@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://jegnux.github.io/posts/equatable-on-enum-associated-values/</loc>
+    <lastmod>2018-01-14T01:40:45+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/posts/safe-collection-subscripting/</loc>
+    <lastmod>2018-01-14T00:34:59+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/posts/elegant-programming/</loc>
+    <lastmod>2018-01-13T23:18:25+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/authors/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/posts/</loc>
+    <lastmod>2018-01-14T01:40:45+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/tags/stdlib/</loc>
+    <lastmod>2018-01-14T00:34:59+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/tags/swift-lang/</loc>
+    <lastmod>2018-01-14T01:40:45+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/tags/</loc>
+    <lastmod>2018-01-14T00:34:59+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/tags/the-blog/</loc>
+    <lastmod>2018-01-13T23:18:25+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jegnux.github.io/</loc>
+    <lastmod>2018-01-14T01:40:45+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
