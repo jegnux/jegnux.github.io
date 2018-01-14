@@ -214,7 +214,7 @@ public extension Collection { private func distance(from startIndex: Index) -&gt
 <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">2.</span>..<span style="color:#ae81ff">8</span>] {
     print(n) <span style="color:#75715e">// Never get here</span>
 }</code></pre></div>
-<p>Semantically, it&rsquo;s way better. <code>numbers.safe</code> is a <em>safe version of <code>numbers</code></em>. We can use its subscripts without worrying about being out of bounds.</p>
+<p>Semantically, it&rsquo;s way better: <code>numbers.safe</code> is a <em>safe version of <code>numbers</code></em>. We can use its subscripts without worrying about being out of bounds.</p>
 
 <p><em>This post was initially <a href="https://medium.com/@jegnux/safe-collection-subsripting-in-swift-3771f16f883">posted on medium</a></em></p>
 
