@@ -20,8 +20,8 @@
       <description>The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
 Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
 &amp;mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
- you should use a switch instead, but still need to compare all cases.
- Maybe. But the code above still feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.</description>
+ you can use a switch to have clearer code, but you still need the same logic
+ Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.</description>
     </item>
     
     <item>

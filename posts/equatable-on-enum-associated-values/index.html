@@ -7,15 +7,15 @@
 <meta name='description' content='The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
 Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
 &mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
- you should use a switch instead, but still need to compare all cases.
- Maybe. But the code above still feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.'>
+ you can use a switch to have clearer code, but you still need the same logic
+ Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.'>
 
 <meta property='og:title' content='Equatable on Enum Associated Values • ✨ Elegant Programming in Swift'>
 <meta property='og:description' content='The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
 Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
 &mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
- you should use a switch instead, but still need to compare all cases.
- Maybe. But the code above still feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.'>
+ you can use a switch to have clearer code, but you still need the same logic
+ Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.'>
 <meta property='og:url' content='https://jegnux.github.io/posts/equatable-on-enum-associated-values/'>
 <meta property='og:site_name' content='✨ Elegant Programming in Swift'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='swift-lang'><meta property='article:published_time' content='2018-01-14T01:40:45&#43;01:00'/><meta property='article:modified_time' content='2018-01-14T01:40:45&#43;01:00'/><meta name='twitter:card' content='summary'><meta name='twitter:site' content='@jegnux'>
@@ -127,10 +127,10 @@ ga('send', 'pageview');
 <p>Most of responses were pure technical (but still valid) answers. In short:</p>
 
 <blockquote>
-<p>you should use a switch instead, but still need to compare all cases.</p>
+<p>you can use a switch to have clearer code, but you still need the same logic</p>
 </blockquote>
 
-<p>Maybe. But the code above still feels wrong to me because it tries to make two different cases equatable just because they have the same associated value. That&rsquo;s semantically incorrect. With a such implementation the following code would return <code>true</code></p>
+<p>Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value. That&rsquo;s semantically incorrect. With a such implementation the following code would return <code>true</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">.afterID(<span style="color:#ae81ff">42</span>) == .beforeID(<span style="color:#ae81ff">42</span>)</code></pre></div>
 <p>No difficulty here to understand that this can become a source of bugs. Especially with indirect uses of Equatable, like a Collection&rsquo;s <code>contains()</code> func for example.</p>
 
