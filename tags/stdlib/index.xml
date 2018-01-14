@@ -19,7 +19,7 @@
       <guid>https://jegnux.github.io/posts/safe-collection-subscripting/</guid>
       <description>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
 On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
-public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
+123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
     </item>
     
   </channel>
