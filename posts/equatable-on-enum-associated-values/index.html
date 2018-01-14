@@ -118,10 +118,9 @@ ga('send', 'pageview');
 
 <p>While I was reading Twitter, I came across this good question from <a href="https://twitter.com/Cocoanetics">@Cocoanetics</a>:</p>
 
-<p><blockquote class="twitter-tweet"><p lang="en" dir="ltr">Is there a better way to make an enum with associated values equatable? <a href="https://t.co/rio4NcRXFc">pic.twitter.com/rio4NcRXFc</a></p>&mdash; Cocoanetics  (@Cocoanetics) <a href="https://twitter.com/Cocoanetics/status/800653458365939713?ref_src=twsrc%5Etfw">November 21, 2016</a></blockquote>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Is there a better way to make an enum with associated values equatable? <a href="https://t.co/rio4NcRXFc">pic.twitter.com/rio4NcRXFc</a></p>&mdash; Cocoanetics  (@Cocoanetics) <a href="https://twitter.com/Cocoanetics/status/800653458365939713?ref_src=twsrc%5Etfw">November 21, 2016</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-<img alt="Cocoanetics' Screenshot" src="https://pbs.twimg.com/media/Cxx-EWcXUAEQiBg.jpg" style="height:450px;"/></p>
 
 <hr />
 
@@ -162,16 +161,16 @@ ga('send', 'pageview');
     <span style="color:#66d9ef">switch</span> (lhs, rhs) {
     <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
       <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
       <span style="color:#66d9ef">return</span> _id == id
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
       <span style="color:#66d9ef">return</span> _id == id
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
       <span style="color:#66d9ef">return</span> _offset == offset
-      
+
     <span style="color:#66d9ef">default</span>:
       <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
     }
@@ -187,7 +186,7 @@ QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterI
 QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>)
 <span style="color:#75715e">// false, cases are different</span>
 
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).identifier 
+QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).identifier
 <span style="color:#75715e">// true, we don&#39;t care about the case, we just compare identifiers</span></code></pre></div>
 <p>But the problem is that it can lead to strange results:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">QueryFilter.noFilter.identifier == QueryFilter.offset(<span style="color:#ae81ff">42</span>).identifier
@@ -211,48 +210,48 @@ QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFi
   <span style="color:#66d9ef">case</span> offset(Int)
 
   <span style="color:#75715e">// This will shadow one of above cases</span>
-  <span style="color:#66d9ef">indirect</span> <span style="color:#66d9ef">case</span> value(QueryFilter) 
+  <span style="color:#66d9ef">indirect</span> <span style="color:#66d9ef">case</span> value(QueryFilter)
 
   <span style="color:#66d9ef">var</span> value: QueryFilter {
      <span style="color:#75715e">// Avoid `.value(_)` shadowing</span>
     <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .value(<span style="color:#66d9ef">_</span>) = <span style="color:#66d9ef">self</span> { <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span> }
-    
+
     <span style="color:#75715e">// Shadow original case (self) in an `value(_)` case</span>
     <span style="color:#66d9ef">return</span> .value(<span style="color:#66d9ef">self</span>)
   }
 }</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">QueryFilter</span>: Equatable {
   <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">func</span> == (lhs: QueryFilter, rhs: QueryFilter) -&gt; Bool {
     <span style="color:#66d9ef">switch</span> (lhs, rhs) {
-     
+
     <span style="color:#75715e">// Nothing change for basic cases. We make a strict equality check</span>
     <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
       <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
       <span style="color:#66d9ef">return</span> _id == id
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
       <span style="color:#66d9ef">return</span> _id == id
-      
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
       <span style="color:#66d9ef">return</span> _offset == offset
 
-    <span style="color:#75715e">// But we allow comparison between .beforeID(_) and .afterID(_) values </span>
+    <span style="color:#75715e">// But we allow comparison between .beforeID(_) and .afterID(_) values</span>
     <span style="color:#75715e">// if they shadowed by a .value(_) case</span>
- 
+
     <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.value(lhs), .value(rhs)):
-    
+
       <span style="color:#66d9ef">switch</span> (lhs.original, rhs.original) {
-      
+
       <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .afterID(id)):
         <span style="color:#66d9ef">return</span> _id == id
-        
+
       <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .beforeID(id)):
         <span style="color:#66d9ef">return</span> _id == id
-      
+
       <span style="color:#75715e">// If it&#39;s not a comparison between .beforeID(_) and .afterID(_)</span>
       <span style="color:#75715e">// we fallback on the classic equality check.</span>
-      
+
       <span style="color:#66d9ef">default</span>:
         <span style="color:#66d9ef">return</span> lhs == rhs
       }
