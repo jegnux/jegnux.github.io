@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on ✨ Elegant Swift</title>
-    <link>http://www.elegantswift.com/categories/</link>
+    <link>http://elegantswift.com/categories/</link>
     <description>Recent content in Categories on ✨ Elegant Swift</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://www.elegantswift.com/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://elegantswift.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>

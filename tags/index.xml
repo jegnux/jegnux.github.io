@@ -2,48 +2,48 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on ✨ Elegant Swift</title>
-    <link>http://www.elegantswift.com/tags/</link>
+    <link>http://elegantswift.com/tags/</link>
     <description>Recent content in Tags on ✨ Elegant Swift</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 28 Jan 2018 09:23:08 +0100</lastBuildDate>
     
-	<atom:link href="http://www.elegantswift.com/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://elegantswift.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Rxswift</title>
-      <link>http://www.elegantswift.com/tags/rxswift/</link>
+      <link>http://elegantswift.com/tags/rxswift/</link>
       <pubDate>Sun, 28 Jan 2018 09:23:08 +0100</pubDate>
       
-      <guid>http://www.elegantswift.com/tags/rxswift/</guid>
+      <guid>http://elegantswift.com/tags/rxswift/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Stdlib</title>
-      <link>http://www.elegantswift.com/tags/stdlib/</link>
+      <link>http://elegantswift.com/tags/stdlib/</link>
       <pubDate>Sun, 14 Jan 2018 00:34:59 +0100</pubDate>
       
-      <guid>http://www.elegantswift.com/tags/stdlib/</guid>
+      <guid>http://elegantswift.com/tags/stdlib/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Swift-lang</title>
-      <link>http://www.elegantswift.com/tags/swift-lang/</link>
+      <link>http://elegantswift.com/tags/swift-lang/</link>
       <pubDate>Sun, 14 Jan 2018 01:40:45 +0100</pubDate>
       
-      <guid>http://www.elegantswift.com/tags/swift-lang/</guid>
+      <guid>http://elegantswift.com/tags/swift-lang/</guid>
       <description></description>
     </item>
     
     <item>
       <title>The-blog</title>
-      <link>http://www.elegantswift.com/tags/the-blog/</link>
+      <link>http://elegantswift.com/tags/the-blog/</link>
       <pubDate>Sat, 13 Jan 2018 23:18:25 +0100</pubDate>
       
-      <guid>http://www.elegantswift.com/tags/the-blog/</guid>
+      <guid>http://elegantswift.com/tags/the-blog/</guid>
       <description></description>
     </item>
     
