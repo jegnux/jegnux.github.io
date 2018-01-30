@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rxswift on ✨ Elegant Programming in Swift</title>
+    <link>https://jegnux.github.io/tags/rxswift/</link>
+    <description>Recent content in Rxswift on ✨ Elegant Programming in Swift</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 Jan 2018 09:23:08 +0100</lastBuildDate>
+    
+	<atom:link href="https://jegnux.github.io/tags/rxswift/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Scroll to Top with Undo in RxSwift</title>
+      <link>https://jegnux.github.io/posts/scroll-to-top-feature-in-rxswift/</link>
+      <pubDate>Sun, 28 Jan 2018 09:23:08 +0100</pubDate>
+      
+      <guid>https://jegnux.github.io/posts/scroll-to-top-feature-in-rxswift/</guid>
+      <description>In this post I&amp;rsquo;ll write about how to implement a custom scroll to top feature with the ability to restore the old contentOffset. The first app I saw implementing this feature was TweetBot in its 4.8 update and it became instantly a must have for me.
+While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how I did it entirely using RxSwift.</description>
+    </item>
+    
+  </channel>
+</rss>
