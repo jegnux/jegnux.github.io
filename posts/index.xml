@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on ✨ Elegant Programming in Swift</title>
-    <link>https://jegnux.github.io/posts/</link>
-    <description>Recent content in Posts on ✨ Elegant Programming in Swift</description>
+    <title>Posts on ✨ Elegant Swift</title>
+    <link>http://www.elegantswift.com/posts/</link>
+    <description>Recent content in Posts on ✨ Elegant Swift</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 28 Jan 2018 09:23:08 +0100</lastBuildDate>
     
-	<atom:link href="https://jegnux.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.elegantswift.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Scroll to Top with Undo in RxSwift</title>
-      <link>https://jegnux.github.io/posts/scroll-to-top-feature-in-rxswift/</link>
+      <link>http://www.elegantswift.com/posts/scroll-to-top-feature-in-rxswift/</link>
       <pubDate>Sun, 28 Jan 2018 09:23:08 +0100</pubDate>
       
-      <guid>https://jegnux.github.io/posts/scroll-to-top-feature-in-rxswift/</guid>
+      <guid>http://www.elegantswift.com/posts/scroll-to-top-feature-in-rxswift/</guid>
       <description>In this post I&amp;rsquo;ll write about how to implement a custom scroll to top feature with the ability to restore the old contentOffset. The first app I saw implementing this feature was TweetBot in its 4.8 update and it became instantly a must have for me.
 While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how I did it entirely using RxSwift.</description>
     </item>
     
     <item>
       <title>Equatable on Enum Associated Values</title>
-      <link>https://jegnux.github.io/posts/equatable-on-enum-associated-values/</link>
+      <link>http://www.elegantswift.com/posts/equatable-on-enum-associated-values/</link>
       <pubDate>Sun, 14 Jan 2018 01:40:45 +0100</pubDate>
       
-      <guid>https://jegnux.github.io/posts/equatable-on-enum-associated-values/</guid>
+      <guid>http://www.elegantswift.com/posts/equatable-on-enum-associated-values/</guid>
       <description>The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
 Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
 &amp;mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
@@ -36,10 +36,10 @@ Is there a better way to make an enum with associated values equatable? pic.twit
     
     <item>
       <title>Safe Collection Subscripting</title>
-      <link>https://jegnux.github.io/posts/safe-collection-subscripting/</link>
+      <link>http://www.elegantswift.com/posts/safe-collection-subscripting/</link>
       <pubDate>Sun, 14 Jan 2018 00:34:59 +0100</pubDate>
       
-      <guid>https://jegnux.github.io/posts/safe-collection-subscripting/</guid>
+      <guid>http://www.elegantswift.com/posts/safe-collection-subscripting/</guid>
       <description>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
 On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
 123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
@@ -47,10 +47,10 @@ On internet, we can find here, here, here and somewhere here this solution, whic
     
     <item>
       <title>Elegant Programming</title>
-      <link>https://jegnux.github.io/posts/elegant-programming/</link>
+      <link>http://www.elegantswift.com/posts/elegant-programming/</link>
       <pubDate>Sat, 13 Jan 2018 23:18:25 +0100</pubDate>
       
-      <guid>https://jegnux.github.io/posts/elegant-programming/</guid>
+      <guid>http://www.elegantswift.com/posts/elegant-programming/</guid>
       <description>Elegant code is simple, gives you some new insight and is generally composable and modular. These qualities, although they may look almost arbitrary, are actually deeply related, practically different facets of the same underlying idea.
  That&amp;rsquo;s what you can read in this answer on Quora.
 In this blog, I&amp;rsquo;ll try to see how we, as iOS developers, can exhibit theses qualities in the code we write on a daily basis in Swift.</description>

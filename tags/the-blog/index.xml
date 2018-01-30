@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>The-blog on ✨ Elegant Programming in Swift</title>
-    <link>https://jegnux.github.io/tags/the-blog/</link>
-    <description>Recent content in The-blog on ✨ Elegant Programming in Swift</description>
+    <title>The-blog on ✨ Elegant Swift</title>
+    <link>http://www.elegantswift.com/tags/the-blog/</link>
+    <description>Recent content in The-blog on ✨ Elegant Swift</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 13 Jan 2018 23:18:25 +0100</lastBuildDate>
     
-	<atom:link href="https://jegnux.github.io/tags/the-blog/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.elegantswift.com/tags/the-blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Elegant Programming</title>
-      <link>https://jegnux.github.io/posts/elegant-programming/</link>
+      <link>http://www.elegantswift.com/posts/elegant-programming/</link>
       <pubDate>Sat, 13 Jan 2018 23:18:25 +0100</pubDate>
       
-      <guid>https://jegnux.github.io/posts/elegant-programming/</guid>
+      <guid>http://www.elegantswift.com/posts/elegant-programming/</guid>
       <description>Elegant code is simple, gives you some new insight and is generally composable and modular. These qualities, although they may look almost arbitrary, are actually deeply related, practically different facets of the same underlying idea.
  That&amp;rsquo;s what you can read in this answer on Quora.
 In this blog, I&amp;rsquo;ll try to see how we, as iOS developers, can exhibit theses qualities in the code we write on a daily basis in Swift.</description>
