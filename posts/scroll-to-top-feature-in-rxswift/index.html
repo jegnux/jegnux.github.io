@@ -201,7 +201,7 @@ The only way I found to bypass this limitation is to intercept the invocation of
 <table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
 <pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span></code></pre></td>
 <td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">point</span>(inside: CGPoint, with: UIEvent?)</code></pre></td></tr></table>
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">hitTest</span>(<span style="color:#66d9ef">_</span> point: CGPoint, with event: UIEvent?) -&gt; UIView?</code></pre></td></tr></table>
 </div>
 </div>
 <p>And <strong>RxCocoa</strong> has a powerful built-in <code>.methodInvoked()</code> operator to do this.</p>
