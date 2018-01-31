@@ -18,7 +18,7 @@
       
       <guid>http://elegantswift.com/posts/scroll-to-top-feature-in-rxswift/</guid>
       <description>In this post I&amp;rsquo;ll write about how to implement a custom scroll to top feature with the ability to restore the old contentOffset. The first app I saw implementing this feature was TweetBot in its 4.8 update and it became instantly a must have for me.
-While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how I did it entirely using RxSwift.</description>
+While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how it can be done entirely using RxSwift 🤘</description>
     </item>
     
     <item>
