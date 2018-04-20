@@ -131,13 +131,7 @@ ga('send', 'pageview');
 </blockquote>
 
 <p>Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value. That&rsquo;s semantically incorrect. With a such implementation the following code would return <code>true</code></p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">.afterID(<span style="color:#ae81ff">42</span>) == .beforeID(<span style="color:#ae81ff">42</span>)</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">1</span>.afterID(<span style="color:#ae81ff">42</span>) == .beforeID(<span style="color:#ae81ff">42</span>)</code></pre></div>
 <p>No difficulty here to understand that this can become a source of bugs. Especially with indirect uses of Equatable, like a Collection&rsquo;s <code>contains()</code> func for example.</p>
 
 <p>How could we make a more elegant implementation of Equatable with this two requirements:</p>
@@ -152,78 +146,54 @@ ga('send', 'pageview');
 <h1 id="a-simple-solution">A simple solution</h1>
 
 <p>An easy first attempt could be to perform a strict equality check on cases, and use an <code>identifier</code> property to check identifiers equality:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryFilter</span> {
-  <span style="color:#66d9ef">case</span> noFilter
-  <span style="color:#66d9ef">case</span> afterID(Int)
-  <span style="color:#66d9ef">case</span> beforeID(Int)
-  <span style="color:#66d9ef">case</span> offset(Int)
-
-  <span style="color:#66d9ef">var</span> identifier: Int? {
-    <span style="color:#66d9ef">switch</span> <span style="color:#66d9ef">self</span> {
-    <span style="color:#66d9ef">case</span> .afterID(<span style="color:#66d9ef">let</span> id), .beforeID(<span style="color:#66d9ef">let</span> id):
-      <span style="color:#66d9ef">return</span> id
-    <span style="color:#66d9ef">case</span> .noFilter, .offset:
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-}</code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">18</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">19</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">20</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">QueryFilter</span>: Equatable {
-  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">func</span> == (lhs: QueryFilter, rhs: QueryFilter) -&gt; Bool {
-    <span style="color:#66d9ef">switch</span> (lhs, rhs) {
-    <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
-      <span style="color:#66d9ef">return</span> _id == id
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
-      <span style="color:#66d9ef">return</span> _id == id
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
-      <span style="color:#66d9ef">return</span> _offset == offset
-
-    <span style="color:#66d9ef">default</span>:
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-    }
-  }
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryFilter</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>  <span style="color:#66d9ef">case</span> noFilter
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>  <span style="color:#66d9ef">case</span> afterID(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>  <span style="color:#66d9ef">case</span> beforeID(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>  <span style="color:#66d9ef">case</span> offset(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>  <span style="color:#66d9ef">var</span> identifier: Int? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>    <span style="color:#66d9ef">switch</span> <span style="color:#66d9ef">self</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>    <span style="color:#66d9ef">case</span> .afterID(<span style="color:#66d9ef">let</span> id), .beforeID(<span style="color:#66d9ef">let</span> id):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>      <span style="color:#66d9ef">return</span> id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>    <span style="color:#66d9ef">case</span> .noFilter, .offset:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>}</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">QueryFilter</span>: Equatable {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">func</span> == (lhs: QueryFilter, rhs: QueryFilter) -&gt; Bool {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>    <span style="color:#66d9ef">switch</span> (lhs, rhs) {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>    <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>      <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>      <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>      <span style="color:#66d9ef">return</span> _offset == offset
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>    <span style="color:#66d9ef">default</span>:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span>}</code></pre></div>
 <p>Here how it works:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">42</span>)
-<span style="color:#75715e">// true</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">1337</span>)
-<span style="color:#75715e">// false, identifiers are different</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>)
-<span style="color:#75715e">// false, cases are different</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).identifier
-<span style="color:#75715e">// true, we don&#39;t care about the case, we just compare identifiers</span></code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">42</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="color:#75715e">// true</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">1337</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="color:#75715e">// false, identifiers are different</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="color:#75715e">// false, cases are different</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).identifier
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="color:#75715e">// true, we don&#39;t care about the case, we just compare identifiers</span></code></pre></div>
 <p>But the problem is that it can lead to strange results:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">2</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">QueryFilter.noFilter.identifier == QueryFilter.offset(<span style="color:#ae81ff">42</span>).identifier
-<span style="color:#75715e">// true, nil == nil is true 😒</span></code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">1</span>QueryFilter.noFilter.identifier == QueryFilter.offset(<span style="color:#ae81ff">42</span>).identifier
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">2</span><span style="color:#75715e">// true, nil == nil is true 😒</span></code></pre></div>
 <p>Can we fix this?<br/>
 <strong>Yes</strong>. Have you ever heard about indirect enums? 😏</p>
 
@@ -236,112 +206,94 @@ QueryFilter.afterID(<span style="color:#ae81ff">42</span>).identifier == QueryFi
 <p>But how this could solve our problem? It’s quite simple: instead of having identifier being an Int?, this var can be itself a <code>QueryFilter</code> with an indirect case shadowing the original <code>QueryFilter</code> case.</p>
 
 <p>This way, we can make a specific rule for shadowed cases in our <code>==</code> implementation.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryFilter</span> {
-  <span style="color:#66d9ef">case</span> noFilter
-  <span style="color:#66d9ef">case</span> afterID(Int)
-  <span style="color:#66d9ef">case</span> beforeID(Int)
-  <span style="color:#66d9ef">case</span> offset(Int)
-
-  <span style="color:#75715e">// This will shadow one of above cases</span>
-  <span style="color:#66d9ef">indirect</span> <span style="color:#66d9ef">case</span> value(QueryFilter)
-
-  <span style="color:#66d9ef">var</span> value: QueryFilter {
-     <span style="color:#75715e">// Avoid `.value(_)` shadowing</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .value(<span style="color:#66d9ef">_</span>) = <span style="color:#66d9ef">self</span> { <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span> }
-
-    <span style="color:#75715e">// Shadow original case (self) in an `value(_)` case</span>
-    <span style="color:#66d9ef">return</span> .value(<span style="color:#66d9ef">self</span>)
-  }
-}</code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">18</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">19</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">20</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">21</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">22</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">23</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">24</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">25</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">26</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">27</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">28</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">29</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">30</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">31</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">32</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">33</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">34</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">35</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">36</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">37</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">38</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">39</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">40</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">41</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">42</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">43</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">44</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">45</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">46</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">47</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">48</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">49</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">50</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">51</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">QueryFilter</span>: Equatable {
-  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">func</span> == (lhs: QueryFilter, rhs: QueryFilter) -&gt; Bool {
-    <span style="color:#66d9ef">switch</span> (lhs, rhs) {
-
-    <span style="color:#75715e">// Nothing change for basic cases. We make a strict equality check</span>
-    <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
-      <span style="color:#66d9ef">return</span> _id == id
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
-      <span style="color:#66d9ef">return</span> _id == id
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
-      <span style="color:#66d9ef">return</span> _offset == offset
-
-    <span style="color:#75715e">// But we allow comparison between .beforeID(_) and .afterID(_) values</span>
-    <span style="color:#75715e">// if they shadowed by a .value(_) case</span>
-
-    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.value(lhs), .value(rhs)):
-
-      <span style="color:#66d9ef">switch</span> (lhs.original, rhs.original) {
-
-      <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .afterID(id)):
-        <span style="color:#66d9ef">return</span> _id == id
-
-      <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .beforeID(id)):
-        <span style="color:#66d9ef">return</span> _id == id
-
-      <span style="color:#75715e">// If it&#39;s not a comparison between .beforeID(_) and .afterID(_)</span>
-      <span style="color:#75715e">// we fallback on the classic equality check.</span>
-
-      <span style="color:#66d9ef">default</span>:
-        <span style="color:#66d9ef">return</span> lhs == rhs
-      }
-
-    <span style="color:#66d9ef">default</span>:
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-    }
-  }
-
-  <span style="color:#75715e">// This recursively get the original shadowed value even if you do somwthing like :</span>
-  <span style="color:#75715e">// let query = QueryFilter.value(.value(.value(.afterID(42))))</span>
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> original: QueryFilter {
-    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> .value(queryFilter) = <span style="color:#66d9ef">self</span> {
-      <span style="color:#66d9ef">return</span> queryFilter.original
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>
-  }
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryFilter</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>  <span style="color:#66d9ef">case</span> noFilter
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>  <span style="color:#66d9ef">case</span> afterID(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>  <span style="color:#66d9ef">case</span> beforeID(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>  <span style="color:#66d9ef">case</span> offset(Int)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>  <span style="color:#75715e">// This will shadow one of above cases</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>  <span style="color:#66d9ef">indirect</span> <span style="color:#66d9ef">case</span> value(QueryFilter)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>  <span style="color:#66d9ef">var</span> value: QueryFilter {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>     <span style="color:#75715e">// Avoid `.value(_)` shadowing</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> .value(<span style="color:#66d9ef">_</span>) = <span style="color:#66d9ef">self</span> { <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span> }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>    <span style="color:#75715e">// Shadow original case (self) in an `value(_)` case</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>    <span style="color:#66d9ef">return</span> .value(<span style="color:#66d9ef">self</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>}</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">QueryFilter</span>: Equatable {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">func</span> == (lhs: QueryFilter, rhs: QueryFilter) -&gt; Bool {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>    <span style="color:#66d9ef">switch</span> (lhs, rhs) {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>    <span style="color:#75715e">// Nothing change for basic cases. We make a strict equality check</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>    <span style="color:#66d9ef">case</span> (.noFilter, .noFilter):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .afterID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>      <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .beforeID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>      <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.offset(_offset), .offset(offset)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>      <span style="color:#66d9ef">return</span> _offset == offset
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>    <span style="color:#75715e">// But we allow comparison between .beforeID(_) and .afterID(_) values</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>    <span style="color:#75715e">// if they shadowed by a .value(_) case</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">21</span>    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.value(lhs), .value(rhs)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">22</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">23</span>      <span style="color:#66d9ef">switch</span> (lhs.original, rhs.original) {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">25</span>      <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.beforeID(_id), .afterID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">26</span>        <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">27</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">28</span>      <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> (.afterID(_id), .beforeID(id)):
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">29</span>        <span style="color:#66d9ef">return</span> _id == id
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">30</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">31</span>      <span style="color:#75715e">// If it&#39;s not a comparison between .beforeID(_) and .afterID(_)</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">32</span>      <span style="color:#75715e">// we fallback on the classic equality check.</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">33</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">34</span>      <span style="color:#66d9ef">default</span>:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">35</span>        <span style="color:#66d9ef">return</span> lhs == rhs
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">36</span>      }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">37</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">38</span>    <span style="color:#66d9ef">default</span>:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">39</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">40</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">41</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">42</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">43</span>  <span style="color:#75715e">// This recursively get the original shadowed value even if you do somwthing like :</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">44</span>  <span style="color:#75715e">// let query = QueryFilter.value(.value(.value(.afterID(42))))</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">45</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> original: QueryFilter {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">46</span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">let</span> .value(queryFilter) = <span style="color:#66d9ef">self</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">47</span>      <span style="color:#66d9ef">return</span> queryFilter.original
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">48</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">49</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">50</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">51</span>}</code></pre></div>
 <p>Does it work well? Hell yes! 😈</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">18</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">19</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">20</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">QueryFilter.noFilter == QueryFilter.offset(<span style="color:#ae81ff">42</span>)
-<span style="color:#75715e">// false</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">42</span>)
-<span style="color:#75715e">// true</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">1337</span>)
-<span style="color:#75715e">// false</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>)
-<span style="color:#75715e">// false</span>
-
-QueryFilter.noFilter.value == QueryFilter.offset(<span style="color:#ae81ff">42</span>).value
-<span style="color:#75715e">// false</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value == QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value
-<span style="color:#75715e">// true</span>
-
-QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).value
-<span style="color:#75715e">// true</span></code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>QueryFilter.noFilter == QueryFilter.offset(<span style="color:#ae81ff">42</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="color:#75715e">// false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">42</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="color:#75715e">// true</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.afterID(<span style="color:#ae81ff">1337</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="color:#75715e">// false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>) == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="color:#75715e">// false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>QueryFilter.noFilter.value == QueryFilter.offset(<span style="color:#ae81ff">42</span>).value
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="color:#75715e">// false</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value == QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="color:#75715e">// true</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>QueryFilter.afterID(<span style="color:#ae81ff">42</span>).value == QueryFilter.beforeID(<span style="color:#ae81ff">42</span>).value
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span><span style="color:#75715e">// true</span></code></pre></div>
 <p><em>This post was initially <a href="https://medium.com/@jegnux/on-swift-enums-with-associated-value-equality-e815a768d9b0">posted on medium</a></em></p>
 
 </div>

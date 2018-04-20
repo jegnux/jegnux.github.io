@@ -49,56 +49,38 @@
 There are also two little Rx extensions I use.&lt;/p&gt;
 
 &lt;p&gt;The first one transforms any &lt;code&gt;Observable&amp;lt;E&amp;gt;&lt;/code&gt; into &lt;code&gt;Observable&amp;lt;Void&amp;gt;&lt;/code&gt;. It&amp;rsquo;s quite convenient when we don&amp;rsquo;t need the value. Typically when you use the &lt;code&gt;Observable&lt;/code&gt; as a sampler.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;void&lt;/span&gt;() -&amp;gt; Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; map { &lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; }
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;void&lt;/span&gt;() -&amp;gt; Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;3&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; map { &lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;4&lt;/span&gt;  }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;5&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;The second is a &lt;code&gt;startWith&lt;/code&gt; operator that takes a closure instead of a value. It avoids a strong reference on the initial value.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;startWith&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; factory: @escaping () -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; start = Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;.deferred {
-      factory()
-    }
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; start.concat(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;startWith&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; factory: @escaping () -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;3&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; start = Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;.deferred {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;4&lt;/span&gt;      factory()
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;5&lt;/span&gt;    }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;6&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; start.concat(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;7&lt;/span&gt;  }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;8&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3 id=&#34;1-detect-tap-on-status-bar&#34;&gt;1. Detect tap on status bar&lt;/h3&gt;
 
 &lt;p&gt;To do this without any subclassing, &lt;strong&gt;RxCocoa&lt;/strong&gt; will be a precious help.&lt;/p&gt;
 
 &lt;p&gt;First let&amp;rsquo;s make an &lt;code&gt;Observable&amp;lt;UIWindow?&amp;gt;&lt;/code&gt; that emits the &lt;code&gt;keyWindow&lt;/code&gt; of &lt;code&gt;UIApplication.shared&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; keyWindow: Observable&amp;lt;UIWindow?&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; NotificationCenter.&lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;.rx
-      .notification(.UIWindowDidBecomeKey, object: &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;)
-      .map { notification -&amp;gt; UIWindow? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-        notification.object &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIWindow
-      }
-      .startWith { [&lt;span style=&#34;color:#66d9ef&#34;&gt;weak&lt;/span&gt; base] &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; base = base &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .just(base.keyWindow)
-      }
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; keyWindow: Observable&amp;lt;UIWindow?&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 3&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; NotificationCenter.&lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;.rx
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 4&lt;/span&gt;      .notification(.UIWindowDidBecomeKey, object: &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 5&lt;/span&gt;      .map { notification -&amp;gt; UIWindow? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 6&lt;/span&gt;        notification.object &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIWindow
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 7&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 8&lt;/span&gt;      .startWith { [&lt;span style=&#34;color:#66d9ef&#34;&gt;weak&lt;/span&gt; base] &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 9&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; base = base &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;10&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .just(base.keyWindow)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;11&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;12&lt;/span&gt;  }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;13&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;ul&gt;
 &lt;li&gt;On &lt;strong&gt;lines 3 to 6&lt;/strong&gt; we listen for &lt;code&gt;UIWindowDidBecomeKey&lt;/code&gt; notification and get the associated object (the window) once a notification is posted&lt;/li&gt;
 &lt;li&gt;On &lt;strong&gt;lines 8 to 11&lt;/strong&gt; we use the current &lt;code&gt;base.keyWindow&lt;/code&gt; as a start value&lt;/li&gt;
@@ -108,43 +90,31 @@ There are also two little Rx extensions I use.&lt;/p&gt;
 
 &lt;p&gt;Unfortunately, on iOS &lt;span class=&#34;red&#34;&gt;the view system won&amp;rsquo;t deliver the touch event&lt;/span&gt; to any gesture recognizer if the touch location is in status bar&amp;rsquo;s frame.
 The only way I found to bypass this limitation is to intercept the invocation of:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hitTest&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; point: CGPoint, with event: UIEvent?) -&amp;gt; UIView?&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hitTest&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; point: CGPoint, with event: UIEvent?) -&amp;gt; UIView?&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And &lt;strong&gt;RxCocoa&lt;/strong&gt; has a powerful built-in &lt;code&gt;.methodInvoked()&lt;/code&gt; operator to do this.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; keyWindow
-      .flatMapLatest { window -&amp;gt; Observable&amp;lt;CGPoint&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; window = window &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; window.rx
-          .methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(UIView.hitTest(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:with:)))
-          .map { args -&amp;gt; CGPoint? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; args.count == &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;,
-              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; point = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? CGPoint,
-              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; _ = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIEvent
-              &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;}
-            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; point
-          }
-          .unwrap()
-      }
-      .filter { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; app = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.base] point &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-        point.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; app.statusBarFrame.maxY &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
-      }
-      .void()
-      .debounce(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, scheduler: MainScheduler.asyncInstance)
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 3&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; keyWindow
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 4&lt;/span&gt;      .flatMapLatest { window -&amp;gt; Observable&amp;lt;CGPoint&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 5&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; window = window &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 6&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; window.rx
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 7&lt;/span&gt;          .methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(UIView.hitTest(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:with:)))
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 8&lt;/span&gt;          .map { args -&amp;gt; CGPoint? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 9&lt;/span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; args.count == &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;,
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;10&lt;/span&gt;              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; point = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? CGPoint,
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;11&lt;/span&gt;              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; _ = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIEvent
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;12&lt;/span&gt;              &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;}
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;13&lt;/span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; point
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;14&lt;/span&gt;          }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;15&lt;/span&gt;          .unwrap()
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;16&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;17&lt;/span&gt;      .filter { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; app = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.base] point &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;18&lt;/span&gt;        point.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; app.statusBarFrame.maxY &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;19&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;20&lt;/span&gt;      .void()
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;21&lt;/span&gt;      .debounce(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, scheduler: MainScheduler.asyncInstance)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;22&lt;/span&gt;  }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;23&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;ul&gt;
 &lt;li&gt;On &lt;strong&gt;line 3&lt;/strong&gt; we use the &lt;code&gt;keyWindow: Observable&amp;lt;UIWindow?&amp;gt;&lt;/code&gt; defined earlier&lt;/li&gt;
 &lt;li&gt;On &lt;strong&gt;line 7&lt;/strong&gt; we use the &lt;code&gt;.methodInvoked()&lt;/code&gt; operator to intercept the invocation of &lt;code&gt;UIView.hitTest(_:with:)&lt;/code&gt;,&lt;/li&gt;
@@ -162,52 +132,40 @@ The only way I found to bypass this limitation is to intercept the invocation of
 &lt;p&gt;As you will likely use this feature on a &lt;code&gt;UIScrollView&lt;/code&gt; included in a specific &lt;code&gt;UIViewController&lt;/code&gt;, you better make sure that this &lt;code&gt;UIViewController&lt;/code&gt; is actually &lt;strong&gt;visible&lt;/strong&gt; before reacting to this event.&lt;/p&gt;
 
 &lt;p&gt;Otherwise, imagine you have several &lt;code&gt;UIViewController&lt;/code&gt; implementing this gesture in a &lt;code&gt;UITabBarController&lt;/code&gt;. If you don&amp;rsquo;t emit the event only for the visible &lt;code&gt;UIViewController&lt;/code&gt;, a tap on the status bar will scroll to top all &lt;code&gt;UIScrollView&lt;/code&gt; of all view controllers. We obviously don&amp;rsquo;t want this.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIViewController {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; isVisible: Observable&amp;lt;Bool&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; = Observable
-    .merge(
-      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
-      	UIViewController.viewWillAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
-      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
-
-      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
-      	UIViewController.viewDidAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
-      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;),
-
-      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
-      	UIViewController.viewWillDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
-      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
-
-      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
-      	UIViewController.viewDidDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
-     	)).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;)
-    )
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; UIApplication.shared.rx
-      .statusBarTap
-      .pausable(isVisible)
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIViewController {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 3&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; isVisible: Observable&amp;lt;Bool&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; = Observable
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 4&lt;/span&gt;    .merge(
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 5&lt;/span&gt;      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 6&lt;/span&gt;      	UIViewController.viewWillAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 7&lt;/span&gt;      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 8&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 9&lt;/span&gt;      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;10&lt;/span&gt;      	UIViewController.viewDidAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;11&lt;/span&gt;      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;),
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;12&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;13&lt;/span&gt;      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;14&lt;/span&gt;      	UIViewController.viewWillDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;15&lt;/span&gt;      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;16&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;17&lt;/span&gt;      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;18&lt;/span&gt;      	UIViewController.viewDidDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;19&lt;/span&gt;     	)).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;20&lt;/span&gt;    )
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;21&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; UIApplication.shared.rx
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;22&lt;/span&gt;      .statusBarTap
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;23&lt;/span&gt;      .pausable(isVisible)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;24&lt;/span&gt;  }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;25&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Once again, &lt;strong&gt;RxCocoa&lt;/strong&gt;&amp;rsquo;s &lt;code&gt;.methodInvoked()&lt;/code&gt; operator is a great help as it allows us to intercept appearance lifecycle methods and map them to a boolean indicating if the view controller is visible or not. Here, &lt;code&gt;viewDidAppear&lt;/code&gt; is mapped to &lt;code&gt;true&lt;/code&gt; (line 11) and other methods are mapped to &lt;code&gt;false&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;To finish, we reuse &lt;code&gt;UIApplication.shared.rx.statusBarTap&lt;/code&gt; we created earlier and use the &lt;a href=&#34;https://github.com/RxSwiftCommunity/RxSwiftExt#pausable&#34;&gt;&lt;code&gt;.pausable()&lt;/code&gt;&lt;/a&gt; operator of &lt;strong&gt;RxSwiftExt&lt;/strong&gt; in order to emit values only if latest value from &lt;code&gt;isVisible&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h3 id=&#34;3-scrolltarget&#34;&gt;3. ScrollTarget&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ScrollTarget&lt;/span&gt; {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; top
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; offset(CGFloat)
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ScrollTarget&lt;/span&gt; {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; top
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;3&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; offset(CGFloat)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;4&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;✅ Done&lt;/p&gt;
 
 &lt;h3 id=&#34;4-save-contentoffset-after-scroll&#34;&gt;4. Save contentOffset after scroll&lt;/h3&gt;
@@ -215,42 +173,36 @@ The only way I found to bypass this limitation is to intercept the invocation of
 &lt;p&gt;Starting from here, I will simplify and write all the code we need in our &lt;code&gt;UIViewController&lt;/code&gt;&amp;rsquo;s &lt;code&gt;viewDidLoad()&lt;/code&gt;. I will also assume there are a &lt;code&gt;scrollView&lt;/code&gt; and a &lt;code&gt;disposeBag&lt;/code&gt; around there.&lt;/p&gt;
 
 &lt;p&gt;Let&amp;rsquo;s start with the code.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;super&lt;/span&gt;.viewDidLoad()
-
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; target = BehaviorSubject(value: ScrollTarget.top)
-
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.rx.statusBarTap.withLatestFrom(target).share()
-
-  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
-  source
-    .map { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] target -&amp;gt; ScrollTarget &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .offset(scrollView.contentOffset.y)
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset:
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .top
-      }
-    }
-    .bind(to: target)
-    .disposed(by: disposeBag)
-
-  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
-  scrollView.rx
-    .willBeginDragging
-    .map(to: .top)
-    .bind(to: target)
-    .disposed(by: disposeBag)
-
-  &lt;span style=&#34;color:#75715e&#34;&gt;// To be continued...&lt;/span&gt;
-
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 2&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;super&lt;/span&gt;.viewDidLoad()
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 3&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 4&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; target = BehaviorSubject(value: ScrollTarget.top)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 5&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 6&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.rx.statusBarTap.withLatestFrom(target).share()
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 7&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 8&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 9&lt;/span&gt;  source
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;10&lt;/span&gt;    .map { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] target -&amp;gt; ScrollTarget &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;11&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;12&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;13&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .offset(scrollView.contentOffset.y)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;14&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset:
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;15&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .top
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;16&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;17&lt;/span&gt;    }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;18&lt;/span&gt;    .bind(to: target)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;19&lt;/span&gt;    .disposed(by: disposeBag)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;20&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;21&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;22&lt;/span&gt;  scrollView.rx
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;23&lt;/span&gt;    .willBeginDragging
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;24&lt;/span&gt;    .map(to: .top)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;25&lt;/span&gt;    .bind(to: target)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;26&lt;/span&gt;    .disposed(by: disposeBag)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;27&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;28&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// To be continued...&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;29&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;30&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;ul&gt;
 &lt;li&gt;On &lt;strong&gt;line 4&lt;/strong&gt; we create a &lt;code&gt;BehaviorSubject&lt;/code&gt; that will hold our next &lt;code&gt;ScrollTarget&lt;/code&gt;. The initial target will obviously be &lt;code&gt;.top&lt;/code&gt;.&lt;/li&gt;
 &lt;li&gt;On &lt;strong&gt;line 6&lt;/strong&gt; we prepare our source. It&amp;rsquo;s just the &lt;code&gt;UIViewController.rx.statusBarTap&lt;/code&gt; we created earlier, combined with the next target, and we finish with a &lt;code&gt;share()&lt;/code&gt;. It&amp;rsquo;s important to share here because as on &lt;strong&gt;line 27&lt;/strong&gt; we update the target, we want to be sure that the subscription to actually &lt;em&gt;scrolls&lt;/em&gt; the scroll view, use the correct target.&lt;/li&gt;
@@ -261,39 +213,33 @@ The only way I found to bypass this limitation is to intercept the invocation of
 &lt;h3 id=&#34;5-the-final-piece&#34;&gt;5. The final piece&lt;/h3&gt;
 
 &lt;p&gt;Now we can implement the actual scrolling.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
-&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
-&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
-  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
-
-  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = ...
-
-  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
-  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
-
-  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
-  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
-
-  source
-    .map { target -&amp;gt; CGFloat &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;scrollView.adjustedContentInset.top
-      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset(&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; offset):
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; offset
-      }
-    }
-    .subscribe(onNext: { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] offset &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; contentOffset = scrollView.contentOffset
-        contentOffset.y = offset
-        scrollView.setContentOffset(contentOffset, animated: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;)
-    })
-    .disposed(by: disposeBag)
-}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 2&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 3&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 4&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = ...
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 5&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 6&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 7&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 8&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt; 9&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;10&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;11&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;12&lt;/span&gt;  source
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;13&lt;/span&gt;    .map { target -&amp;gt; CGFloat &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;14&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;15&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;16&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;scrollView.adjustedContentInset.top
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;17&lt;/span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset(&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; offset):
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;18&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; offset
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;19&lt;/span&gt;      }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;20&lt;/span&gt;    }
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;21&lt;/span&gt;    .subscribe(onNext: { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] offset &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;22&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; contentOffset = scrollView.contentOffset
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;23&lt;/span&gt;        contentOffset.y = offset
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;24&lt;/span&gt;        scrollView.setContentOffset(contentOffset, animated: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;25&lt;/span&gt;    })
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;26&lt;/span&gt;    .disposed(by: disposeBag)
+&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;&#34;&gt;27&lt;/span&gt;}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;No big deal here, we just get the good offset for each &lt;code&gt;ScrollTarget&lt;/code&gt; cases and we animate the &lt;code&gt;scrollView.contentOffset&lt;/code&gt; update.&lt;/p&gt;
 
 &lt;p&gt;&lt;center&gt;&lt;big&gt;&lt;strong&gt;That&amp;rsquo;s all 🎉&lt;/strong&gt;&lt;/big&gt;&lt;/center&gt;&lt;/p&gt;

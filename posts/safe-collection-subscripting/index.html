@@ -6,12 +6,12 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
 On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
-123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&gt; IndexDistance { return distance(from: startIndex, to: self.'>
+1public extension Collection { 2 private func distance(from startIndex: Index) -&gt; IndexDistance { 3 return distance(from: startIndex, to: self.'>
 
 <meta property='og:title' content='Safe Collection Subscripting • ✨ Elegant Swift'>
 <meta property='og:description' content='As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
 On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
-123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&gt; IndexDistance { return distance(from: startIndex, to: self.'>
+1public extension Collection { 2 private func distance(from startIndex: Index) -&gt; IndexDistance { 3 return distance(from: startIndex, to: self.'>
 <meta property='og:url' content='http://elegantswift.com/posts/safe-collection-subscripting/'>
 <meta property='og:site_name' content='✨ Elegant Swift'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='stdlib'><meta property='article:published_time' content='2018-01-14T00:34:59&#43;01:00'/><meta property='article:modified_time' content='2018-01-14T00:34:59&#43;01:00'/><meta name='twitter:card' content='summary'><meta name='twitter:site' content='@jegnux'>
@@ -111,158 +111,116 @@ ga('send', 'pageview');
   <p>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.</p>
 
 <p>On internet, we can find <a href="http://ericasadun.com/2015/06/01/swift-safe-array-indexing-my-favorite-thing-of-the-new-week/">here</a>, <a href="http://ericasadun.com/2015/06/24/dear-erica-extend-safe-index/">here</a>, <a href="http://stackoverflow.com/questions/25329186/safe-bounds-checked-array-lookup-in-swift-through-optional-bindings">here</a> and somewhere <a href="https://medium.com/swift-programming/swift-sequences-ce22d76f120c#.hyyhrxp6i">here</a> this solution, which consists to add a label to the subscript parameter.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">18</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">19</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">20</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">21</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">22</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">23</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">24</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">25</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">26</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">27</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">28</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">29</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">30</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">Collection</span> {
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(from startIndex: Index) -&gt; IndexDistance {
-    <span style="color:#66d9ef">return</span> distance(from: startIndex, to: <span style="color:#66d9ef">self</span>.endIndex)
-  }
-
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(to endIndex: Index) -&gt; IndexDistance {
-    <span style="color:#66d9ef">return</span> distance(from: <span style="color:#66d9ef">self</span>.startIndex, to: endIndex)
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe index: Index) -&gt; Iterator.Element? {
-    <span style="color:#66d9ef">if</span> distance(to: index) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: index) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[index]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe bounds: Range&lt;Index<span style="color:#f92672">&gt;</span>) -&gt; SubSequence? {
-    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[bounds]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe bounds: ClosedRange&lt;Index<span style="color:#f92672">&gt;</span>) -&gt; SubSequence? {
-    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[bounds]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">Collection</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(from startIndex: Index) -&gt; IndexDistance {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>    <span style="color:#66d9ef">return</span> distance(from: startIndex, to: <span style="color:#66d9ef">self</span>.endIndex)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(to endIndex: Index) -&gt; IndexDistance {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>    <span style="color:#66d9ef">return</span> distance(from: <span style="color:#66d9ef">self</span>.startIndex, to: endIndex)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe index: Index) -&gt; Iterator.Element? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>    <span style="color:#66d9ef">if</span> distance(to: index) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: index) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[index]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe bounds: Range&lt;Index<span style="color:#f92672">&gt;</span>) -&gt; SubSequence? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[bounds]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">21</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">22</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">23</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(safe bounds: ClosedRange&lt;Index<span style="color:#f92672">&gt;</span>) -&gt; SubSequence? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">25</span>    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">26</span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>[bounds]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">27</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">28</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">29</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">30</span>}</code></pre></div>
 <p>With this extension, if you add the <code>safe:</code> label to your subscript it will return an Optional of your Element instead of the Element itself. Then, if the Index is in bounds, the Optional will embed your value, but if not, instead of a runtime error, you will get an <code>Optional&lt;Element&gt;.none</code>, aka <code>nil</code>.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">let</span> numbers = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">7</span>]
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">2</span>] {
-    print(n) <span style="color:#75715e">// Prints &#34;3&#34;</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">20</span>] {
-    print(n) <span style="color:#75715e">// Never get here</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">1.</span>..<span style="color:#ae81ff">3</span>] {
-    print(n) <span style="color:#75715e">// Prints &#34;[3, 3, 7]&#34;</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">2.</span>..<span style="color:#ae81ff">8</span>] {
-    print(n) <span style="color:#75715e">// Never get here</span>
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">let</span> numbers = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">7</span>]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">2</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>    print(n) <span style="color:#75715e">// Prints &#34;3&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">20</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>    print(n) <span style="color:#75715e">// Never get here</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">1.</span>..<span style="color:#ae81ff">3</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>    print(n) <span style="color:#75715e">// Prints &#34;[3, 3, 7]&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers[safe: <span style="color:#ae81ff">2.</span>..<span style="color:#ae81ff">8</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>    print(n) <span style="color:#75715e">// Never get here</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>}</code></pre></div>
 <p>It does the job, but I really don’t like this label. It doesn’t feel natural at all to me. A labelled is supposed to describe the given argument. Or its semantic. But here it describes the behavior of the subscript.</p>
 
 <p>How can we improve this to have a more elegant syntax ? Do we have something similar in the standard library? Maybe Lazy Collections? If Lazy Collections were impletemented like this labelled subscript feature above, we would have something like this:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">numbers.filter(<span style="color:#66d9ef">lazy</span>: { <span style="color:#f92672">%</span><span style="color:#ae81ff">0</span> ==<span style="color:#ae81ff">2</span> })</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">1</span>numbers.filter(<span style="color:#66d9ef">lazy</span>: { <span style="color:#f92672">%</span><span style="color:#ae81ff">0</span> ==<span style="color:#ae81ff">2</span> })</code></pre></div>
 <p>But instead, we use a much clearer proxy <code>LazyCollection</code> type like this:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift">numbers.<span style="color:#66d9ef">lazy</span>.filter { $0 == <span style="color:#ae81ff">2</span> }</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">1</span>numbers.<span style="color:#66d9ef">lazy</span>.filter { $0 == <span style="color:#ae81ff">2</span> }</code></pre></div>
 <p>So let’s build a <code>SafeCollection</code> type.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">14</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">15</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">16</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">17</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">18</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">19</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">20</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">21</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">22</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">23</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">24</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">25</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">26</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">27</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">28</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">29</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">30</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">31</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">32</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">33</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">34</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">35</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">36</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">37</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SafeCollection</span>&lt;Base : Collection<span style="color:#f92672">&gt;</span> {
-
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> base: Base
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">init</span>(<span style="color:#66d9ef">_</span> base: Base) {
-    <span style="color:#66d9ef">self</span>.base = base
-  }
-
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(from startIndex: Base.Index) -&gt; Base.IndexDistance {
-    <span style="color:#66d9ef">return</span> base.distance(from: startIndex, to: _base.endIndex)
-  }
-
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(to endIndex: Base.Index) -&gt; Base.IndexDistance {
-    <span style="color:#66d9ef">return</span> base.distance(from: _base.startIndex, to: endIndex)
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(index: Base.Index) -&gt; Base.Iterator.Element? {
-    <span style="color:#66d9ef">if</span> distance(to: index) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: index) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> base[index]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(bounds: Range&lt;Base.Index<span style="color:#f92672">&gt;</span>) -&gt; Base.SubSequence? {
-    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> base[bounds]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(bounds: ClosedRange&lt;Base.Index<span style="color:#f92672">&gt;</span>) -&gt; Base.SubSequence? {
-    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
-      <span style="color:#66d9ef">return</span> base[bounds]
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-  }
-
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SafeCollection</span>&lt;Base : Collection<span style="color:#f92672">&gt;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> base: Base
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">init</span>(<span style="color:#66d9ef">_</span> base: Base) {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>    <span style="color:#66d9ef">self</span>.base = base
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(from startIndex: Base.Index) -&gt; Base.IndexDistance {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>    <span style="color:#66d9ef">return</span> base.distance(from: startIndex, to: _base.endIndex)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">distance</span>(to endIndex: Base.Index) -&gt; Base.IndexDistance {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>    <span style="color:#66d9ef">return</span> base.distance(from: _base.startIndex, to: endIndex)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(index: Base.Index) -&gt; Base.Iterator.Element? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>    <span style="color:#66d9ef">if</span> distance(to: index) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: index) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>      <span style="color:#66d9ef">return</span> base[index]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">21</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">22</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">23</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(bounds: Range&lt;Base.Index<span style="color:#f92672">&gt;</span>) -&gt; Base.SubSequence? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span>    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">25</span>      <span style="color:#66d9ef">return</span> base[bounds]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">26</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">27</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">28</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">29</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">30</span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">subscript</span>(bounds: ClosedRange&lt;Base.Index<span style="color:#f92672">&gt;</span>) -&gt; Base.SubSequence? {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">31</span>    <span style="color:#66d9ef">if</span> distance(to: bounds.lowerBound) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> distance(from: bounds.upperBound) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">32</span>      <span style="color:#66d9ef">return</span> base[bounds]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">33</span>    }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">34</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">35</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">36</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">37</span>}</code></pre></div>
 <p>As you can see, it’s just a wrapper around your original collection that forwards subscript calls to its base only if given <code>Index</code> is in the collection bounds. Simple.</p>
 
 <p>To use this collection like the <code>lazy</code> feature, we just need to extend <code>Collection</code>.</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">5</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">Collection</span> {
-  <span style="color:#66d9ef">var</span> safe: SafeCollection&lt;<span style="color:#66d9ef">Self</span><span style="color:#f92672">&gt;</span> {
-    <span style="color:#66d9ef">return</span> SafeCollection(<span style="color:#66d9ef">self</span>)
-  }
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">1</span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">Collection</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">2</span>  <span style="color:#66d9ef">var</span> safe: SafeCollection&lt;<span style="color:#66d9ef">Self</span><span style="color:#f92672">&gt;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">3</span>    <span style="color:#66d9ef">return</span> SafeCollection(<span style="color:#66d9ef">self</span>)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">4</span>  }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">5</span>}</code></pre></div>
 <p>We can now use this new beautiful safe syntax like this:</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style=";border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;"><tr><td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 1</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 2</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 3</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 4</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 5</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 6</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 7</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 8</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;"> 9</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">10</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">11</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">12</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;">13</span></code></pre></td>
-<td style=";vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">let</span> numbers = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">7</span>]
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">2</span>] {
-    print(n) <span style="color:#75715e">// Prints &#34;3&#34;</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">20</span>] {
-    print(n) <span style="color:#75715e">// Never get here</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">1.</span>..<span style="color:#ae81ff">3</span>] {
-    print(n) <span style="color:#75715e">// Prints &#34;[3, 3, 7]&#34;</span>
-}
-<span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">2.</span>..<span style="color:#ae81ff">8</span>] {
-    print(n) <span style="color:#75715e">// Never get here</span>
-}</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">let</span> numbers = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">7</span>]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">2</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>    print(n) <span style="color:#75715e">// Prints &#34;3&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">20</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>    print(n) <span style="color:#75715e">// Never get here</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">1.</span>..<span style="color:#ae81ff">3</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>    print(n) <span style="color:#75715e">// Prints &#34;[3, 3, 7]&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> n = numbers.safe[<span style="color:#ae81ff">2.</span>..<span style="color:#ae81ff">8</span>] {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>    print(n) <span style="color:#75715e">// Never get here</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>}</code></pre></div>
 <p>Semantically, it&rsquo;s way better: <code>numbers.safe</code> is a <em>safe version of <code>numbers</code></em>. We can use its subscripts without worrying about being out of bounds.</p>
 
 <p><em>This post was initially <a href="https://medium.com/@jegnux/safe-collection-subsripting-in-swift-3771f16f883">posted on medium</a></em></p>
