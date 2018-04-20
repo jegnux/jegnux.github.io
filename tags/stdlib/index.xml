@@ -8,7 +8,7 @@
     <language>en-us</language>
     <lastBuildDate>Sun, 14 Jan 2018 00:34:59 +0100</lastBuildDate>
     
-	<atom:link href="http://elegantswift.com/tags/stdlib/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://elegantswift.com/tags/stdlib/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,9 +17,165 @@
       <pubDate>Sun, 14 Jan 2018 00:34:59 +0100</pubDate>
       
       <guid>http://elegantswift.com/posts/safe-collection-subscripting/</guid>
-      <description>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
-On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
-123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
+      <description>&lt;p&gt;As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.&lt;/p&gt;
+
+&lt;p&gt;On internet, we can find &lt;a href=&#34;http://ericasadun.com/2015/06/01/swift-safe-array-indexing-my-favorite-thing-of-the-new-week/&#34;&gt;here&lt;/a&gt;, &lt;a href=&#34;http://ericasadun.com/2015/06/24/dear-erica-extend-safe-index/&#34;&gt;here&lt;/a&gt;, &lt;a href=&#34;http://stackoverflow.com/questions/25329186/safe-bounds-checked-array-lookup-in-swift-through-optional-bindings&#34;&gt;here&lt;/a&gt; and somewhere &lt;a href=&#34;https://medium.com/swift-programming/swift-sequences-ce22d76f120c#.hyyhrxp6i&#34;&gt;here&lt;/a&gt; this solution, which consists to add a label to the subscript parameter.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Collection&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(from startIndex: Index) -&amp;gt; IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; distance(from: startIndex, to: &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(to endIndex: Index) -&amp;gt; IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; distance(from: &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.startIndex, to: endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe index: Index) -&amp;gt; Iterator.Element? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[index]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe bounds: Range&amp;lt;Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe bounds: ClosedRange&amp;lt;Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;With this extension, if you add the &lt;code&gt;safe:&lt;/code&gt; label to your subscript it will return an Optional of your Element instead of the Element itself. Then, if the Index is in bounds, the Optional will embed your value, but if not, instead of a runtime error, you will get an &lt;code&gt;Optional&amp;lt;Element&amp;gt;.none&lt;/code&gt;, aka &lt;code&gt;nil&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; numbers = [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;]
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;3&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;[3, 3, 7]&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;2.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;It does the job, but I really don’t like this label. It doesn’t feel natural at all to me. A labelled is supposed to describe the given argument. Or its semantic. But here it describes the behavior of the subscript.&lt;/p&gt;
+
+&lt;p&gt;How can we improve this to have a more elegant syntax ? Do we have something similar in the standard library? Maybe Lazy Collections? If Lazy Collections were impletemented like this labelled subscript feature above, we would have something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;numbers.filter(&lt;span style=&#34;color:#66d9ef&#34;&gt;lazy&lt;/span&gt;: { &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; ==&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; })&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;But instead, we use a much clearer proxy &lt;code&gt;LazyCollection&lt;/code&gt; type like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;numbers.&lt;span style=&#34;color:#66d9ef&#34;&gt;lazy&lt;/span&gt;.filter { $0 == &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; }&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;So let’s build a &lt;code&gt;SafeCollection&lt;/code&gt; type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;31&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;32&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;33&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;34&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;35&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;36&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;37&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SafeCollection&lt;/span&gt;&amp;lt;Base : Collection&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; base: Base
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;init&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; base: Base) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.base = base
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(from startIndex: Base.Index) -&amp;gt; Base.IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base.distance(from: startIndex, to: _base.endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(to endIndex: Base.Index) -&amp;gt; Base.IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base.distance(from: _base.startIndex, to: endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(index: Base.Index) -&amp;gt; Base.Iterator.Element? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[index]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(bounds: Range&amp;lt;Base.Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Base.SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(bounds: ClosedRange&amp;lt;Base.Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Base.SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;As you can see, it’s just a wrapper around your original collection that forwards subscript calls to its base only if given &lt;code&gt;Index&lt;/code&gt; is in the collection bounds. Simple.&lt;/p&gt;
+
+&lt;p&gt;To use this collection like the &lt;code&gt;lazy&lt;/code&gt; feature, we just need to extend &lt;code&gt;Collection&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Collection&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; safe: SafeCollection&amp;lt;&lt;span style=&#34;color:#66d9ef&#34;&gt;Self&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; SafeCollection(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;We can now use this new beautiful safe syntax like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; numbers = [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;]
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;3&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;[3, 3, 7]&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;2.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Semantically, it&amp;rsquo;s way better: &lt;code&gt;numbers.safe&lt;/code&gt; is a &lt;em&gt;safe version of &lt;code&gt;numbers&lt;/code&gt;&lt;/em&gt;. We can use its subscripts without worrying about being out of bounds.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;This post was initially &lt;a href=&#34;https://medium.com/@jegnux/safe-collection-subsripting-in-swift-3771f16f883&#34;&gt;posted on medium&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+</description>
     </item>
     
   </channel>

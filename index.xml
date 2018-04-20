@@ -8,7 +8,7 @@
     <language>en-us</language>
     <lastBuildDate>Sun, 28 Jan 2018 09:23:08 +0100</lastBuildDate>
     
-	<atom:link href="http://elegantswift.com/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://elegantswift.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,8 +17,297 @@
       <pubDate>Sun, 28 Jan 2018 09:23:08 +0100</pubDate>
       
       <guid>http://elegantswift.com/posts/scroll-to-top-feature-in-rxswift/</guid>
-      <description>In this post I&amp;rsquo;ll write about how to implement a custom scroll to top feature with the ability to restore the old contentOffset. The first app I saw implementing this feature was TweetBot in its 4.8 update and it became instantly a must have for me.
-While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how it can be done entirely using RxSwift 🤘</description>
+      <description>
+
+&lt;p&gt;In this post I&amp;rsquo;ll write about how to implement a custom &lt;strong&gt;scroll to top&lt;/strong&gt; feature with the ability to restore the old &lt;code&gt;contentOffset&lt;/code&gt;. The first app I saw implementing this feature was &lt;a href=&#34;https://tapbots.com/tweetbot/&#34;&gt;TweetBot&lt;/a&gt; in its &lt;a href=&#34;https://itunes.apple.com/fr/app/tweetbot-4-for-twitter/id1018355599?mt=8&#34;&gt;4.8 update&lt;/a&gt; and it became instantly a must have for me.&lt;/p&gt;
+
+&lt;p&gt;While working on side-project application (stay tuned 😉), I implemented this feature as well. Let&amp;rsquo;s see how it can be done entirely using &lt;strong&gt;RxSwift&lt;/strong&gt; 🤘&lt;/p&gt;
+
+&lt;h2 id=&#34;rxswift&#34;&gt;✨ RxSwift&lt;/h2&gt;
+
+&lt;p&gt;My &lt;em&gt;love&lt;/em&gt; for &lt;strong&gt;RxSwift&lt;/strong&gt; began mid 2016 when I joined &lt;span style=&#34;color: #f80059; font-weight:bold;&#34;&gt;Heetch&lt;/span&gt;. Since then, it helps me to write complex features in such a simple, expressive, and readable way. I think I will speak about &lt;strong&gt;RxSwift&lt;/strong&gt; often on this blog, because IMHO &lt;span class=&#34;green&#34;&gt;it definitely helps to write elegant code&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;scroll to top&lt;/strong&gt; is usually triggered by a tap on the status bar, but as it will be implemented here it will also be possible to add new sources to trigger. For instance a tap on tab bar item, or on &lt;code&gt;viewWillAppear()&lt;/code&gt;, or on everything else as soon as it&amp;rsquo;s an &lt;code&gt;Observable&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div style=&#34;background-color:#eeeeee; text-align: center; padding: 20px;&#34;&gt;The beauty of &lt;b&gt;RxSwift&lt;/b&gt; is to offer &lt;span class=&#34;green&#34;&gt;a uniform interface for many Cocoa&#39;s design patterns&lt;/span&gt; (delegate, target/action, notifications, callback closures, etc.).&lt;/div&gt;
+
+&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
+
+&lt;h3 id=&#34;the-recipe&#34;&gt;The recipe&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Implement an &lt;code&gt;Observable&amp;lt;Void&amp;gt;&lt;/code&gt; that emits whenever the user taps on the &lt;code&gt;UIApplication.shared.keyWindow&lt;/code&gt; in status bar&amp;rsquo;s frame&lt;/li&gt;
+&lt;li&gt;Associate 1. to a &lt;code&gt;UIViewController&lt;/code&gt; and filter its events to emit them if and only if the &lt;code&gt;UIViewController&lt;/code&gt; instance is visible (ie. between &lt;code&gt;viewDidAppear&lt;/code&gt; and &lt;code&gt;viewWillDisappear&lt;/code&gt; lifecycle events)&lt;/li&gt;
+&lt;li&gt;Implement a &lt;code&gt;ScrollTarget&lt;/code&gt; enum to let switch over different target (either &lt;code&gt;.top&lt;/code&gt; or &lt;code&gt;.offset(CGFloat)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Implement an &lt;code&gt;Observable&lt;/code&gt; that emits whenever the user has finished to scroll an &lt;code&gt;UIScrollView&lt;/code&gt; in order to save the current &lt;code&gt;contentOffset&lt;/code&gt; into &lt;code&gt;ScrollTarget.offset(contentOffset.y)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Implement the final subscription that combine 2. and 4. to scroll the &lt;code&gt;UIScrollView&lt;/code&gt; to the desired target.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h3&gt;
+
+&lt;p&gt;For the implementation I used &lt;strong&gt;RxSwift&lt;/strong&gt;, &lt;strong&gt;RxCocoa&lt;/strong&gt; and &lt;strong&gt;RxSwiftExt&lt;/strong&gt;.
+There are also two little Rx extensions I use.&lt;/p&gt;
+
+&lt;p&gt;The first one transforms any &lt;code&gt;Observable&amp;lt;E&amp;gt;&lt;/code&gt; into &lt;code&gt;Observable&amp;lt;Void&amp;gt;&lt;/code&gt;. It&amp;rsquo;s quite convenient when we don&amp;rsquo;t need the value. Typically when you use the &lt;code&gt;Observable&lt;/code&gt; as a sampler.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;void&lt;/span&gt;() -&amp;gt; Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; map { &lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; }
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;The second is a &lt;code&gt;startWith&lt;/code&gt; operator that takes a closure instead of a value. It avoids a strong reference on the initial value.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ObservableType&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;startWith&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; factory: @escaping () -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; start = Observable&amp;lt;E&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;.deferred {
+      factory()
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; start.concat(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;1-detect-tap-on-status-bar&#34;&gt;1. Detect tap on status bar&lt;/h3&gt;
+
+&lt;p&gt;To do this without any subclassing, &lt;strong&gt;RxCocoa&lt;/strong&gt; will be a precious help.&lt;/p&gt;
+
+&lt;p&gt;First let&amp;rsquo;s make an &lt;code&gt;Observable&amp;lt;UIWindow?&amp;gt;&lt;/code&gt; that emits the &lt;code&gt;keyWindow&lt;/code&gt; of &lt;code&gt;UIApplication.shared&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; keyWindow: Observable&amp;lt;UIWindow?&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; NotificationCenter.&lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;.rx
+      .notification(.UIWindowDidBecomeKey, object: &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;)
+      .map { notification -&amp;gt; UIWindow? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+        notification.object &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIWindow
+      }
+      .startWith { [&lt;span style=&#34;color:#66d9ef&#34;&gt;weak&lt;/span&gt; base] &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; base = base &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .just(base.keyWindow)
+      }
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;On &lt;strong&gt;lines 3 to 6&lt;/strong&gt; we listen for &lt;code&gt;UIWindowDidBecomeKey&lt;/code&gt; notification and get the associated object (the window) once a notification is posted&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;lines 8 to 11&lt;/strong&gt; we use the current &lt;code&gt;base.keyWindow&lt;/code&gt; as a start value&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now that we always have the latest &lt;code&gt;keyWindow&lt;/code&gt; we can &lt;code&gt;flatMap&lt;/code&gt; over it to detect when user taps in it. The best way to do this is to attach an &lt;code&gt;UITapGestureRecognizer&lt;/code&gt; to the window. It would be really easy to do with &lt;a href=&#34;https://github.com/RxSwiftCommunity/RxGesture&#34;&gt;&lt;strong&gt;RxGesture&lt;/strong&gt;&lt;/a&gt; for example.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, on iOS &lt;span class=&#34;red&#34;&gt;the view system won&amp;rsquo;t deliver the touch event&lt;/span&gt; to any gesture recognizer if the touch location is in status bar&amp;rsquo;s frame.
+The only way I found to bypass this limitation is to intercept the invocation of:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hitTest&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; point: CGPoint, with event: UIEvent?) -&amp;gt; UIView?&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;And &lt;strong&gt;RxCocoa&lt;/strong&gt; has a powerful built-in &lt;code&gt;.methodInvoked()&lt;/code&gt; operator to do this.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIApplication {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; keyWindow
+      .flatMapLatest { window -&amp;gt; Observable&amp;lt;CGPoint&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; window = window &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .empty() }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; window.rx
+          .methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(UIView.hitTest(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:with:)))
+          .map { args -&amp;gt; CGPoint? &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;guard&lt;/span&gt; args.count == &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;,
+              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; point = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? CGPoint,
+              &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; _ = args[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt;? UIEvent
+              &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;}
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; point
+          }
+          .unwrap()
+      }
+      .filter { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; app = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.base] point &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+        point.y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; app.statusBarFrame.maxY &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+      }
+      .void()
+      .debounce(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, scheduler: MainScheduler.asyncInstance)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;On &lt;strong&gt;line 3&lt;/strong&gt; we use the &lt;code&gt;keyWindow: Observable&amp;lt;UIWindow?&amp;gt;&lt;/code&gt; defined earlier&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 7&lt;/strong&gt; we use the &lt;code&gt;.methodInvoked()&lt;/code&gt; operator to intercept the invocation of &lt;code&gt;UIView.hitTest(_:with:)&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;lines 8 to 14&lt;/strong&gt; we &lt;code&gt;map&lt;/code&gt; the previous result to get the point location of the touch event. In practice, it would be safe to return directly a forced unwrapped &lt;code&gt;arg.first as! CGPoint&lt;/code&gt; because we &lt;em&gt;know&lt;/em&gt; the exact method signature, but I still prefer to keep an optional&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 11&lt;/strong&gt;, we make sure that there&amp;rsquo;s really an event given in order to avoid false positives&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 15&lt;/strong&gt; we unwrap the point with &lt;a href=&#34;https://github.com/RxSwiftCommunity/RxSwiftExt#unwrap&#34;&gt;&lt;code&gt;.unwrap()&lt;/code&gt;&lt;/a&gt; operator of &lt;strong&gt;RxSwiftExt&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 18&lt;/strong&gt; you can notice that I add an extra &lt;code&gt;20pt&lt;/code&gt; to the &lt;code&gt;statusBarFrame&lt;/code&gt;. It makes the tappable target a little bit higher. &lt;a href=&#34;https://lawsofux.com/fittss-law.html&#34;&gt;M. Fitts&lt;/a&gt; approves it 👍.&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 21&lt;/strong&gt;, we use the &lt;code&gt;.debounce()&lt;/code&gt; operator with a delay of &lt;code&gt;0&lt;/code&gt; and an async instance of the &lt;code&gt;MainScheduler&lt;/code&gt;. It&amp;rsquo;s important because &lt;code&gt;UIView.hitTest(_:with:)&lt;/code&gt; will be called many times during the same run loop, so we need to filter repetitive events. You can see this as similar to an other UIKit pattern like &lt;code&gt;setNeedsDisplay()&lt;/code&gt; / &lt;code&gt;displayIfNeeded()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;💪 Awesome, we&amp;rsquo;re done with the first step.&lt;/p&gt;
+
+&lt;h3 id=&#34;2-detect-status-bar-tap-on-a-visible-viewcontroller&#34;&gt;2. Detect status bar tap on a visible ViewController&lt;/h3&gt;
+
+&lt;p&gt;As you will likely use this feature on a &lt;code&gt;UIScrollView&lt;/code&gt; included in a specific &lt;code&gt;UIViewController&lt;/code&gt;, you better make sure that this &lt;code&gt;UIViewController&lt;/code&gt; is actually &lt;strong&gt;visible&lt;/strong&gt; before reacting to this event.&lt;/p&gt;
+
+&lt;p&gt;Otherwise, imagine you have several &lt;code&gt;UIViewController&lt;/code&gt; implementing this gesture in a &lt;code&gt;UITabBarController&lt;/code&gt;. If you don&amp;rsquo;t emit the event only for the visible &lt;code&gt;UIViewController&lt;/code&gt;, a tap on the status bar will scroll to top all &lt;code&gt;UIScrollView&lt;/code&gt; of all view controllers. We obviously don&amp;rsquo;t want this.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Reactive&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt; Base: UIViewController {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; statusBarTap: Observable&amp;lt;Void&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; isVisible: Observable&amp;lt;Bool&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; = Observable
+    .merge(
+      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+      	UIViewController.viewWillAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
+
+      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+      	UIViewController.viewDidAppear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;),
+
+      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+      	UIViewController.viewWillDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+      )).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;),
+
+      methodInvoked(&lt;span style=&#34;color:#66d9ef&#34;&gt;#selector&lt;/span&gt;(
+      	UIViewController.viewDidDisappear(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;:)
+     	)).map(to: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;)
+    )
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; UIApplication.shared.rx
+      .statusBarTap
+      .pausable(isVisible)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Once again, &lt;strong&gt;RxCocoa&lt;/strong&gt;&amp;rsquo;s &lt;code&gt;.methodInvoked()&lt;/code&gt; operator is a great help as it allows us to intercept appearance lifecycle methods and map them to a boolean indicating if the view controller is visible or not. Here, &lt;code&gt;viewDidAppear&lt;/code&gt; is mapped to &lt;code&gt;true&lt;/code&gt; (line 11) and other methods are mapped to &lt;code&gt;false&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To finish, we reuse &lt;code&gt;UIApplication.shared.rx.statusBarTap&lt;/code&gt; we created earlier and use the &lt;a href=&#34;https://github.com/RxSwiftCommunity/RxSwiftExt#pausable&#34;&gt;&lt;code&gt;.pausable()&lt;/code&gt;&lt;/a&gt; operator of &lt;strong&gt;RxSwiftExt&lt;/strong&gt; in order to emit values only if latest value from &lt;code&gt;isVisible&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;3-scrolltarget&#34;&gt;3. ScrollTarget&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ScrollTarget&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; top
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; offset(CGFloat)
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;✅ Done&lt;/p&gt;
+
+&lt;h3 id=&#34;4-save-contentoffset-after-scroll&#34;&gt;4. Save contentOffset after scroll&lt;/h3&gt;
+
+&lt;p&gt;Starting from here, I will simplify and write all the code we need in our &lt;code&gt;UIViewController&lt;/code&gt;&amp;rsquo;s &lt;code&gt;viewDidLoad()&lt;/code&gt;. I will also assume there are a &lt;code&gt;scrollView&lt;/code&gt; and a &lt;code&gt;disposeBag&lt;/code&gt; around there.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with the code.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;super&lt;/span&gt;.viewDidLoad()
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; target = BehaviorSubject(value: ScrollTarget.top)
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.rx.statusBarTap.withLatestFrom(target).share()
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
+  source
+    .map { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] target -&amp;gt; ScrollTarget &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .offset(scrollView.contentOffset.y)
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .top
+      }
+    }
+    .bind(to: target)
+    .disposed(by: disposeBag)
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
+  scrollView.rx
+    .willBeginDragging
+    .map(to: .top)
+    .bind(to: target)
+    .disposed(by: disposeBag)
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// To be continued...&lt;/span&gt;
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;On &lt;strong&gt;line 4&lt;/strong&gt; we create a &lt;code&gt;BehaviorSubject&lt;/code&gt; that will hold our next &lt;code&gt;ScrollTarget&lt;/code&gt;. The initial target will obviously be &lt;code&gt;.top&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;line 6&lt;/strong&gt; we prepare our source. It&amp;rsquo;s just the &lt;code&gt;UIViewController.rx.statusBarTap&lt;/code&gt; we created earlier, combined with the next target, and we finish with a &lt;code&gt;share()&lt;/code&gt;. It&amp;rsquo;s important to share here because as on &lt;strong&gt;line 27&lt;/strong&gt; we update the target, we want to be sure that the subscription to actually &lt;em&gt;scrolls&lt;/em&gt; the scroll view, use the correct target.&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;lines 8 to 19&lt;/strong&gt; we save the next target. If current target was &lt;code&gt;.top&lt;/code&gt;, then the next target will be &lt;code&gt;.offset&lt;/code&gt; with the current &lt;code&gt;scrollView&lt;/code&gt; offset. Otherwise, the next target will be &lt;code&gt;.top&lt;/code&gt;. This allows us to alternatively use one target or the other.&lt;/li&gt;
+&lt;li&gt;On &lt;strong&gt;lines 22 to 28&lt;/strong&gt; we add a mechanism that reset the next target to &lt;code&gt;.top&lt;/code&gt; as soon as the user interacts with the &lt;code&gt;scrollView&lt;/code&gt;, because it wouldn&amp;rsquo;t make sense to restore the old offset.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;5-the-final-piece&#34;&gt;5. The final piece&lt;/h3&gt;
+
+&lt;p&gt;Now we can implement the actual scrolling.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;viewDidLoad&lt;/span&gt;() {
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; source = ...
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// Save&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// Reset&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+
+  source
+    .map { target -&amp;gt; CGFloat &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; target {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .top:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;scrollView.adjustedContentInset.top
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .offset(&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; offset):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; offset
+      }
+    }
+    .subscribe(onNext: { [&lt;span style=&#34;color:#66d9ef&#34;&gt;unowned&lt;/span&gt; scrollView] offset &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; contentOffset = scrollView.contentOffset
+        contentOffset.y = offset
+        scrollView.setContentOffset(contentOffset, animated: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;)
+    })
+    .disposed(by: disposeBag)
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;No big deal here, we just get the good offset for each &lt;code&gt;ScrollTarget&lt;/code&gt; cases and we animate the &lt;code&gt;scrollView.contentOffset&lt;/code&gt; update.&lt;/p&gt;
+
+&lt;p&gt;&lt;center&gt;&lt;big&gt;&lt;strong&gt;That&amp;rsquo;s all 🎉&lt;/strong&gt;&lt;/big&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;To conclude, we&amp;rsquo;ve seen some interesting techniques offered by &lt;strong&gt;RxSwift&lt;/strong&gt; and &lt;strong&gt;RxCocoa&lt;/strong&gt; that allowed us to &lt;span class=&#34;green&#34;&gt;compose&lt;/span&gt; an interesting feature without &lt;span class=&#34;red&#34;&gt;subclassing&lt;/span&gt;, or using a &lt;span class=&#34;red&#34;&gt;mutable shared state&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;As an exercise, you can factorize the code we added in the &lt;code&gt;viewDidLoad()&lt;/code&gt; in order to make it easily reusable on any &lt;code&gt;UIViewController&lt;/code&gt; / &lt;code&gt;UIScrollView&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;⚠️ Despite how elegant and clean the final code looks like, there are still some trade-offs because we use some &lt;strong&gt;RxCocoa&lt;/strong&gt; features that depends on &lt;strong&gt;Objective-C runtime&lt;/strong&gt; and, event if we don&amp;rsquo;t use any private methods, you still should be careful when you use such techniques.&lt;/p&gt;
+
+&lt;div style=&#34;background-color:#eeeeee; padding: 20px;&#34;&gt;I hope you enjoyed reading this blog post / tutorial. Please do not hesitate to add a comment to tell me what you thought about it, to ask me some questions, or even to suggest me an idea for a future post where I could try to make an obscure solution more elegant 😉&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -27,11 +316,238 @@ While working on side-project application (stay tuned 😉), I implemented this 
       <pubDate>Sun, 14 Jan 2018 01:40:45 +0100</pubDate>
       
       <guid>http://elegantswift.com/posts/equatable-on-enum-associated-values/</guid>
-      <description>The problem While I was reading Twitter, I came across this good question from @Cocoanetics:
-Is there a better way to make an enum with associated values equatable? pic.twitter.com/rio4NcRXFc
-&amp;mdash; Cocoanetics  (@Cocoanetics) November 21, 2016  Most of responses were pure technical (but still valid) answers. In short:
- you can use a switch to have clearer code, but you still need the same logic
- Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value.</description>
+      <description>
+
+&lt;h1 id=&#34;the-problem&#34;&gt;The problem&lt;/h1&gt;
+
+&lt;p&gt;While I was reading Twitter, I came across this good question from &lt;a href=&#34;https://twitter.com/Cocoanetics&#34;&gt;@Cocoanetics&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Is there a better way to make an enum with associated values equatable? &lt;a href=&#34;https://t.co/rio4NcRXFc&#34;&gt;pic.twitter.com/rio4NcRXFc&lt;/a&gt;&lt;/p&gt;&amp;mdash; Cocoanetics  (@Cocoanetics) &lt;a href=&#34;https://twitter.com/Cocoanetics/status/800653458365939713?ref_src=twsrc%5Etfw&#34;&gt;November 21, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+
+
+&lt;hr /&gt;
+
+&lt;p&gt;Most of responses were pure technical (but still valid) answers. In short:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;you can use a switch to have clearer code, but you still need the same logic&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Maybe. But the logic above feels wrong to me because it tries to make two different cases equatable just because they have the same associated value. That&amp;rsquo;s semantically incorrect. With a such implementation the following code would return &lt;code&gt;true&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == .beforeID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;No difficulty here to understand that this can become a source of bugs. Especially with indirect uses of Equatable, like a Collection&amp;rsquo;s &lt;code&gt;contains()&lt;/code&gt; func for example.&lt;/p&gt;
+
+&lt;p&gt;How could we make a more elegant implementation of Equatable with this two requirements:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;2 different &lt;code&gt;cases&lt;/code&gt; &lt;strong&gt;can’t&lt;/strong&gt; be equal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.afterID&lt;/code&gt; and &lt;code&gt;.beforeID&lt;/code&gt; associated identifiers equality &lt;strong&gt;must&lt;/strong&gt; be easy and straightforward to check.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;a-simple-solution&#34;&gt;A simple solution&lt;/h1&gt;
+
+&lt;p&gt;An easy first attempt could be to perform a strict equality check on cases, and use an &lt;code&gt;identifier&lt;/code&gt; property to check identifiers equality:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;QueryFilter&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; noFilter
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; afterID(Int)
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; beforeID(Int)
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; offset(Int)
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; identifier: Int? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .afterID(&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; id), .beforeID(&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; id):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; id
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .noFilter, .offset:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;QueryFilter&lt;/span&gt;: Equatable {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; == (lhs: QueryFilter, rhs: QueryFilter) -&amp;gt; Bool {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; (lhs, rhs) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; (.noFilter, .noFilter):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.afterID(_id), .afterID(id)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.beforeID(_id), .beforeID(id)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.offset(_offset), .offset(offset)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _offset == offset
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;
+    }
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Here how it works:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// true&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;1337&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// false, identifiers are different&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.beforeID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// false, cases are different&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).identifier == QueryFilter.beforeID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).identifier
+&lt;span style=&#34;color:#75715e&#34;&gt;// true, we don&amp;#39;t care about the case, we just compare identifiers&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;But the problem is that it can lead to strange results:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;QueryFilter.noFilter.identifier == QueryFilter.offset(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).identifier
+&lt;span style=&#34;color:#75715e&#34;&gt;// true, nil == nil is true 😒&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Can we fix this?&lt;br/&gt;
+&lt;strong&gt;Yes&lt;/strong&gt;. Have you ever heard about indirect enums? 😏&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;an-elegant-solution&#34;&gt;An elegant solution&lt;/h1&gt;
+
+&lt;p&gt;An indirect case allows you to make a &amp;ldquo;recursive&amp;rdquo; enum by associating a case to another case of the same enum.&lt;/p&gt;
+
+&lt;p&gt;But how this could solve our problem? It’s quite simple: instead of having identifier being an Int?, this var can be itself a &lt;code&gt;QueryFilter&lt;/code&gt; with an indirect case shadowing the original &lt;code&gt;QueryFilter&lt;/code&gt; case.&lt;/p&gt;
+
+&lt;p&gt;This way, we can make a specific rule for shadowed cases in our &lt;code&gt;==&lt;/code&gt; implementation.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;enum&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;QueryFilter&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; noFilter
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; afterID(Int)
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; beforeID(Int)
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; offset(Int)
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// This will shadow one of above cases&lt;/span&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;indirect&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; value(QueryFilter)
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; value: QueryFilter {
+     &lt;span style=&#34;color:#75715e&#34;&gt;// Avoid `.value(_)` shadowing&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; .value(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt;) = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt; { &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt; }
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Shadow original case (self) in an `value(_)` case&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; .value(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;31&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;32&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;33&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;34&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;35&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;36&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;37&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;38&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;39&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;40&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;41&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;42&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;43&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;44&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;45&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;46&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;47&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;48&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;49&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;50&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;51&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;QueryFilter&lt;/span&gt;: Equatable {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; == (lhs: QueryFilter, rhs: QueryFilter) -&amp;gt; Bool {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; (lhs, rhs) {
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Nothing change for basic cases. We make a strict equality check&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; (.noFilter, .noFilter):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.afterID(_id), .afterID(id)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.beforeID(_id), .beforeID(id)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.offset(_offset), .offset(offset)):
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _offset == offset
+
+    &lt;span style=&#34;color:#75715e&#34;&gt;// But we allow comparison between .beforeID(_) and .afterID(_) values&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;// if they shadowed by a .value(_) case&lt;/span&gt;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.value(lhs), .value(rhs)):
+
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;switch&lt;/span&gt; (lhs.original, rhs.original) {
+
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.beforeID(_id), .afterID(id)):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; (.afterID(_id), .beforeID(id)):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; _id == id
+
+      &lt;span style=&#34;color:#75715e&#34;&gt;// If it&amp;#39;s not a comparison between .beforeID(_) and .afterID(_)&lt;/span&gt;
+      &lt;span style=&#34;color:#75715e&#34;&gt;// we fallback on the classic equality check.&lt;/span&gt;
+
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; lhs == rhs
+      }
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;
+    }
+  }
+
+  &lt;span style=&#34;color:#75715e&#34;&gt;// This recursively get the original shadowed value even if you do somwthing like :&lt;/span&gt;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// let query = QueryFilter.value(.value(.value(.afterID(42))))&lt;/span&gt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; original: QueryFilter {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; .value(queryFilter) = &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; queryFilter.original
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Does it work well? Hell yes! 😈&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;QueryFilter.noFilter == QueryFilter.offset(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// false&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// true&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;1337&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// false&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;) == QueryFilter.beforeID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;// false&lt;/span&gt;
+
+QueryFilter.noFilter.value == QueryFilter.offset(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).value
+&lt;span style=&#34;color:#75715e&#34;&gt;// false&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).value == QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).value
+&lt;span style=&#34;color:#75715e&#34;&gt;// true&lt;/span&gt;
+
+QueryFilter.afterID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).value == QueryFilter.beforeID(&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;).value
+&lt;span style=&#34;color:#75715e&#34;&gt;// true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;This post was initially &lt;a href=&#34;https://medium.com/@jegnux/on-swift-enums-with-associated-value-equality-e815a768d9b0&#34;&gt;posted on medium&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -40,9 +556,165 @@ Is there a better way to make an enum with associated values equatable? pic.twit
       <pubDate>Sun, 14 Jan 2018 00:34:59 +0100</pubDate>
       
       <guid>http://elegantswift.com/posts/safe-collection-subscripting/</guid>
-      <description>As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.
-On internet, we can find here, here, here and somewhere here this solution, which consists to add a label to the subscript parameter.
-123456789101112131415161718192021222324252627282930 public extension Collection { private func distance(from startIndex: Index) -&amp;gt; IndexDistance { return distance(from: startIndex, to: self.</description>
+      <description>&lt;p&gt;As many Swift developers before me, I wanted to find a way to easily fetch an Element from a Collection with its Index, without having to manually check if the Index I give is in the Collection’s bounds.&lt;/p&gt;
+
+&lt;p&gt;On internet, we can find &lt;a href=&#34;http://ericasadun.com/2015/06/01/swift-safe-array-indexing-my-favorite-thing-of-the-new-week/&#34;&gt;here&lt;/a&gt;, &lt;a href=&#34;http://ericasadun.com/2015/06/24/dear-erica-extend-safe-index/&#34;&gt;here&lt;/a&gt;, &lt;a href=&#34;http://stackoverflow.com/questions/25329186/safe-bounds-checked-array-lookup-in-swift-through-optional-bindings&#34;&gt;here&lt;/a&gt; and somewhere &lt;a href=&#34;https://medium.com/swift-programming/swift-sequences-ce22d76f120c#.hyyhrxp6i&#34;&gt;here&lt;/a&gt; this solution, which consists to add a label to the subscript parameter.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Collection&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(from startIndex: Index) -&amp;gt; IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; distance(from: startIndex, to: &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(to endIndex: Index) -&amp;gt; IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; distance(from: &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.startIndex, to: endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe index: Index) -&amp;gt; Iterator.Element? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[index]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe bounds: Range&amp;lt;Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(safe bounds: ClosedRange&amp;lt;Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;With this extension, if you add the &lt;code&gt;safe:&lt;/code&gt; label to your subscript it will return an Optional of your Element instead of the Element itself. Then, if the Index is in bounds, the Optional will embed your value, but if not, instead of a runtime error, you will get an &lt;code&gt;Optional&amp;lt;Element&amp;gt;.none&lt;/code&gt;, aka &lt;code&gt;nil&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; numbers = [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;]
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;3&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;[3, 3, 7]&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers[safe: &lt;span style=&#34;color:#ae81ff&#34;&gt;2.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;It does the job, but I really don’t like this label. It doesn’t feel natural at all to me. A labelled is supposed to describe the given argument. Or its semantic. But here it describes the behavior of the subscript.&lt;/p&gt;
+
+&lt;p&gt;How can we improve this to have a more elegant syntax ? Do we have something similar in the standard library? Maybe Lazy Collections? If Lazy Collections were impletemented like this labelled subscript feature above, we would have something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;numbers.filter(&lt;span style=&#34;color:#66d9ef&#34;&gt;lazy&lt;/span&gt;: { &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; ==&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; })&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;But instead, we use a much clearer proxy &lt;code&gt;LazyCollection&lt;/code&gt; type like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;numbers.&lt;span style=&#34;color:#66d9ef&#34;&gt;lazy&lt;/span&gt;.filter { $0 == &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; }&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;So let’s build a &lt;code&gt;SafeCollection&lt;/code&gt; type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;14&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;16&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;17&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;18&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;19&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;20&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;21&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;22&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;24&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;26&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;27&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;28&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;29&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;30&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;31&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;32&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;33&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;34&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;35&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;36&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;37&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SafeCollection&lt;/span&gt;&amp;lt;Base : Collection&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; base: Base
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;init&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;_&lt;/span&gt; base: Base) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;.base = base
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(from startIndex: Base.Index) -&amp;gt; Base.IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base.distance(from: startIndex, to: _base.endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;distance&lt;/span&gt;(to endIndex: Base.Index) -&amp;gt; Base.IndexDistance {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base.distance(from: _base.startIndex, to: endIndex)
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(index: Base.Index) -&amp;gt; Base.Iterator.Element? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: index) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[index]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(bounds: Range&amp;lt;Base.Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Base.SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;subscript&lt;/span&gt;(bounds: ClosedRange&amp;lt;Base.Index&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; Base.SubSequence? {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; distance(to: bounds.lowerBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; distance(from: bounds.upperBound) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; base[bounds]
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;
+  }
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;As you can see, it’s just a wrapper around your original collection that forwards subscript calls to its base only if given &lt;code&gt;Index&lt;/code&gt; is in the collection bounds. Simple.&lt;/p&gt;
+
+&lt;p&gt;To use this collection like the &lt;code&gt;lazy&lt;/code&gt; feature, we just need to extend &lt;code&gt;Collection&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;5&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;extension&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Collection&lt;/span&gt; {
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; safe: SafeCollection&amp;lt;&lt;span style=&#34;color:#66d9ef&#34;&gt;Self&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; SafeCollection(&lt;span style=&#34;color:#66d9ef&#34;&gt;self&lt;/span&gt;)
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;We can now use this new beautiful safe syntax like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;
+&lt;table style=&#34;;border-spacing:0;padding:0;margin:0;border:0;width:100%;overflow:auto;display:block;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 1&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 2&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 3&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 4&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 5&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 6&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 7&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 8&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt; 9&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;11&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;12&lt;/span&gt;&lt;span style=&#34;color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;display:block;&#34;&gt;13&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; numbers = [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;]
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;3&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Prints &amp;#34;[3, 3, 7]&amp;#34;&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; n = numbers.safe[&lt;span style=&#34;color:#ae81ff&#34;&gt;2.&lt;/span&gt;..&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;] {
+    print(n) &lt;span style=&#34;color:#75715e&#34;&gt;// Never get here&lt;/span&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Semantically, it&amp;rsquo;s way better: &lt;code&gt;numbers.safe&lt;/code&gt; is a &lt;em&gt;safe version of &lt;code&gt;numbers&lt;/code&gt;&lt;/em&gt;. We can use its subscripts without worrying about being out of bounds.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;This post was initially &lt;a href=&#34;https://medium.com/@jegnux/safe-collection-subsripting-in-swift-3771f16f883&#34;&gt;posted on medium&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -51,9 +723,14 @@ On internet, we can find here, here, here and somewhere here this solution, whic
       <pubDate>Sat, 13 Jan 2018 23:18:25 +0100</pubDate>
       
       <guid>http://elegantswift.com/posts/elegant-programming/</guid>
-      <description>Elegant code is simple, gives you some new insight and is generally composable and modular. These qualities, although they may look almost arbitrary, are actually deeply related, practically different facets of the same underlying idea.
- That&amp;rsquo;s what you can read in this answer on Quora.
-In this blog, I&amp;rsquo;ll try to see how we, as iOS developers, can exhibit theses qualities in the code we write on a daily basis in Swift.</description>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Elegant code is &lt;strong&gt;simple&lt;/strong&gt;, gives you some &lt;strong&gt;new insight&lt;/strong&gt; and is generally &lt;strong&gt;composable&lt;/strong&gt; and &lt;strong&gt;modular&lt;/strong&gt;. These qualities, although they may look almost arbitrary, are actually deeply related, practically different facets of the same underlying idea.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;That&amp;rsquo;s what you can read in this &lt;a href=&#34;https://www.quora.com/What-does-programmers-mean-by-elegant-code&#34;&gt;answer&lt;/a&gt; on Quora.&lt;/p&gt;
+
+&lt;p&gt;In this blog, I&amp;rsquo;ll try to see how we, as iOS developers, can exhibit theses qualities in the code we write on a daily basis in Swift.&lt;/p&gt;
+</description>
     </item>
     
   </channel>
